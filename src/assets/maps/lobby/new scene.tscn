@@ -1,0 +1,49 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://assets/maps/lobby/sky.png" type="Texture" id=1]
+[ext_resource path="res://assets/maps/lobby/mountains.png" type="Texture" id=2]
+[ext_resource path="res://assets/maps/lobby/trees.png" type="Texture" id=3]
+[ext_resource path="res://assets/maps/lobby/new scene.gd" type="Script" id=4]
+[ext_resource path="res://assets/maps/lobby/train.png" type="Texture" id=5]
+
+[sub_resource type="CanvasItemMaterial" id=1]
+
+[node name="Node2D" type="Node2D"]
+script = ExtResource( 4 )
+
+[node name="ParallaxBackground" type="ParallaxBackground" parent="."]
+offset = Vector2( 600, 200 )
+scale = Vector2( 0.75, 0.75 )
+transform = Transform2D( 0.75, 0, 0, 0.75, 600, 200 )
+
+[node name="ParallaxLayer" type="ParallaxLayer" parent="ParallaxBackground"]
+material = SubResource( 1 )
+motion_scale = Vector2( 0, 0 )
+motion_mirroring = Vector2( 1920, 0 )
+
+[node name="Sprite" type="Sprite" parent="ParallaxBackground/ParallaxLayer"]
+texture = ExtResource( 1 )
+
+[node name="ParallaxLayer2" type="ParallaxLayer" parent="ParallaxBackground"]
+material = SubResource( 1 )
+motion_scale = Vector2( 0.2, 0 )
+motion_mirroring = Vector2( 1920, 0 )
+
+[node name="Sprite2" type="Sprite" parent="ParallaxBackground/ParallaxLayer2"]
+position = Vector2( 0, 109.284 )
+texture = ExtResource( 2 )
+
+[node name="ParallaxLayer3" type="ParallaxLayer" parent="ParallaxBackground"]
+material = SubResource( 1 )
+motion_scale = Vector2( 1, 0 )
+motion_mirroring = Vector2( 1920, 0 )
+
+[node name="Sprite2" type="Sprite" parent="ParallaxBackground/ParallaxLayer3"]
+texture = ExtResource( 3 )
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Sprite" type="Sprite" parent="CanvasLayer"]
+position = Vector2( 505.089, 331.359 )
+scale = Vector2( 0.549695, 0.549695 )
+texture = ExtResource( 5 )
