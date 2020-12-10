@@ -36,3 +36,8 @@ func _apply_customizations(player: KinematicBody2D, player_data: Dictionary) -> 
 	hat_hair.texture = load(appearance["Hat/Hair"]["texture_path"])
 	mouth.texture = load(appearance["Mouth"]["texture_path"])
 
+func _on_appearance_saved() -> void:
+	"""Called when a player changes their appearance in-game."""
+	_apply_customizations(get_parent().players[Network.get_my_id()], SaveLoadHandler.load_data(get_parent().player_data_path))
+	rpc_id(1, "query_player_data")
+	print("appearance saved from new sckript")

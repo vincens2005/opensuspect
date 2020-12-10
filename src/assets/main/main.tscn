@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://assets/main/appearance.gd" type="Script" id=1]
 [ext_resource path="res://assets/main/maps.gd" type="Script" id=2]
 [ext_resource path="res://assets/main/main.gd" type="Script" id=3]
 [ext_resource path="res://assets/ui/uicontroller/uicontroller.tscn" type="PackedScene" id=4]
+[ext_resource path="res://assets/main/players.gd" type="Script" id=5]
 
 [node name="Main" type="YSort"]
 script = ExtResource( 3 )
@@ -14,11 +15,11 @@ color = Color( 0.188235, 0.164706, 0.164706, 1 )
 [node name="uicontroller" parent="." instance=ExtResource( 4 )]
 
 [node name="players" type="YSort" parent="."]
+script = ExtResource( 5 )
 
 [node name="maps" type="YSort" parent="."]
 script = ExtResource( 2 )
 
 [node name="appearance" type="YSort" parent="."]
 script = ExtResource( 1 )
-[connection signal="_apply_customizations" from="." to="appearance" method="_apply_customizations"]
 [connection signal="spawn" from="maps" to="." method="_on_maps_spawn"]

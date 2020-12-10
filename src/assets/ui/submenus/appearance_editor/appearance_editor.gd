@@ -87,7 +87,7 @@ class PlayerClothes extends PartOption:
 func _ready() -> void:
 	get_tree().get_root().connect("size_changed", self, "_on_root_size_changed")
 	if get_tree().get_root().has_node("Main"):
-		connect("appearance_saved", get_tree().get_root().get_node("Main"), "_on_appearance_saved")
+		connect("appearance_saved", get_tree().get_root().get_node("Main").get_node("appearance"), "_on_appearance_saved")
 
 	# Center cursor in the middle of the skin color picker
 	cursor.position = skin_color_selector.rect_position + (skin_color_selector.rect_size / 2.0)
