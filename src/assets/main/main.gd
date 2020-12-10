@@ -10,14 +10,15 @@ var players = {}
 #!!!THIS IS IMPORTANT!!!
 #CHANGE THIS VARIABLE BY ONE EVERY COMMIT TO PREVENT OLD CLIENTS FROM TRYING TO CONNECT TO SERVERS!!!
 #A way to make up version number: year month date hour of editing this script
-var version = 20120707
+var version = 2012916
 var intruders = 0
 var newnumber
 var spawn_pos = Vector2(0,0)
 var player_data_dict: Dictionary
-
 signal positions_updated(last_received_input)
-
+#PLAYER CUSTOMIZATION SIGNAL
+signal _apply_customizations(player,player_data)
+##^^CONNECTS TO APPEARANCE.GD^^##
 func _ready() -> void:
 	set_network_master(1)
 
@@ -115,7 +116,7 @@ puppetsync func createPlayer(id: int, playerName: String, spawnPoint: Vector2 = 
 		newPlayer.connect("main_player_moved", self, "_on_main_player_moved")
 		self.connect("positions_updated", newPlayer, "_on_positions_updated")
 		player_data = SaveLoadHandler.load_data(player_data_path)
-		_apply_customizations(newPlayer, player_data)
+		emit_signal("_apply_customizations",newPlayer, player_data)
 	players[id] = newPlayer
 	$players.add_child(newPlayer)
 	newPlayer.move_to(spawnPoint, Vector2(0,0))
@@ -314,7 +315,7 @@ master func received_player_data_from_client(player_data: Dictionary) -> void:
 		return
 	var id: int = get_tree().get_rpc_sender_id()
 	player_data_dict[id] = player_data
-	_apply_customizations(players[id], player_data)
+	emit_signal("_apply_customizations",players[id], player_data)
 	rpc("received_player_data_from_server", 1, SaveLoadHandler.load_data(player_data_path))
 	rpc("received_player_data_from_server", id, player_data)
 
@@ -323,45 +324,9 @@ puppet func received_player_data_from_server(id: int, player_data: Dictionary) -
 	if id == Network.get_my_id():
 		return
 	player_data_dict[id] = player_data
-	_apply_customizations(players[id], player_data)
+	emit_signal("_apply_customizations",players[id], player_data)
 
 func _on_appearance_saved() -> void:
 	"""Called when a player changes their appearance in-game."""
-	_apply_customizations(players[Network.get_my_id()], SaveLoadHandler.load_data(player_data_path))
+	emit_signal("_apply_customizations",players[Network.get_my_id()], SaveLoadHandler.load_data(player_data_path))
 	rpc_id(1, "query_player_data")
-
-func _apply_customizations(player: KinematicBody2D, player_data: Dictionary) -> void:
-	"""Apply cosmetic changes to a local player."""
-	if player_data.empty():
-		return
-
-	var skeleton: Node2D
-	if player.has_node("SpritesViewport/Skeleton"):
-		skeleton = player.get_node("SpritesViewport/Skeleton")
-	elif player.has_node("Skeleton"):
-		skeleton = player.get_node("Skeleton")
-	var body: Polygon2D = skeleton.get_node("Body")
-	var left_leg: Polygon2D = skeleton.get_node("LeftLeg")
-	var left_arm: Polygon2D = skeleton.get_node("LeftArm")
-	var right_leg: Polygon2D = skeleton.get_node("RightLeg")
-	var right_arm: Polygon2D = skeleton.get_node("RightArm")
-	var spine: Bone2D = skeleton.get_node("Skeleton/Spine")
-	var clothes: Sprite = spine.get_node("Clothes")
-	var pants: Sprite = spine.get_node("Pants")
-	var facial_hair: Sprite = spine.get_node("FacialHair")
-	var face_wear: Sprite = spine.get_node("FaceWear")
-	var hat_hair: Sprite = spine.get_node("HatHair")
-	var mouth: Sprite = spine.get_node("Mouth")
-
-	var appearance: Dictionary = player_data["Appearance"]
-	skeleton.material.set_shader_param("skin_color", Color(appearance["Skin Color"]))
-	left_leg.texture = load(appearance["Clothes"]["left_leg"]["texture_path"])
-	left_arm.texture = load(appearance["Clothes"]["left_arm"]["texture_path"])
-	right_leg.texture = load(appearance["Clothes"]["right_leg"]["texture_path"])
-	right_arm.texture = load(appearance["Clothes"]["right_arm"]["texture_path"])
-	clothes.texture = load(appearance["Clothes"]["clothes"]["texture_path"])
-	pants.texture = load(appearance["Clothes"]["pants"]["texture_path"])
-	facial_hair.texture = load(appearance["Facial Hair"]["texture_path"])
-	face_wear.texture = load(appearance["Face Wear"]["texture_path"])
-	hat_hair.texture = load(appearance["Hat/Hair"]["texture_path"])
-	mouth.texture = load(appearance["Mouth"]["texture_path"])
